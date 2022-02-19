@@ -1,0 +1,235 @@
+.App {
+	text-align: center;
+	background-color: seagreen;
+	padding-bottom: 10rem;
+	height: 100vh;
+}
+
+a {
+	color: #ffffff;
+}
+
+/* Game.js parent div */
+.Game {
+	background-size: cover;
+	margin: 0;
+	height: 100vh;
+}
+.playerSection {
+	width: 1000px;
+	margin: 1rem auto 0;
+	display: grid; /* to display icon & text in vertical center */
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	align-items: center;
+	flex-direction: row;
+	justify-content: space-around;
+	gap: 1.5rem;
+}
+.playerCard {
+	display: flex;
+	flex-direction: column;
+	padding: 1rem 0rem;
+	border-radius: 8px;
+	border: 1px solid #bbb;
+}
+.playerCard0 {
+	background-color: darkseagreen;
+}
+.playName {
+	color: #eee;
+	height: 2rem;
+	padding-bottom: 1rem;
+}
+.cardPiles {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: space-around;
+	gap: 0.5rem;
+	margin: 1rem 0;
+}
+
+.cardPileUp {
+	position: relative;
+}
+
+.cardPileDown {
+	position: relative;
+}
+.numDown {
+	position: absolute;
+	top: -10px;
+	left: -5px;
+	color: #333;
+}
+.numUp {
+	position: absolute;
+	top: -26px;
+	left: -10px;
+	color: #333;
+}
+
+.cardImg0a {
+	width: 7rem;
+	max-width: 100%;
+}
+.cardImg0b {
+	width: 5rem;
+	max-width: 100%;
+	border: 2px solid #333;
+	border-radius: 5px;
+}
+.cardImgBlank {
+	width: 80px;
+	max-width: 100%;
+	border: 2px solid #333;
+	border-radius: 5px;
+}
+.currentPlay {
+	height: 20rem;
+}
+.hideme {
+	display: none;
+}
+
+.cardImg1 {
+	width: 16rem;
+	max-width: 85%;
+}
+
+div.cardPlay2 {
+	display: none;
+}
+.showTie {
+	display: block !important;
+}
+
+.oldImages_div {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: center;
+}
+.cardImg2 {
+	width: 20%;
+	max-width: 35%;
+}
+.cardImg2a {
+	width: 12%;
+	max-width: 25%;
+	height: 80%;
+	opacity: 0.5;
+}
+.cardImg2b {
+	width: 70%;
+	max-width: 70%;
+	margin-top: 1rem;
+}
+
+.rnd_result {
+	height: 20px;
+}
+.rnd_result.win88 {
+	background-color: #fff;
+	color: #333;
+	padding: 0.3rem 1rem;
+	width: 2rem;
+	margin: 0 auto;
+}
+.rnd_result.win {
+	color: #fff;
+	margin: 0 auto;
+}
+.rnd_result.tie {
+	color: #333;
+	margin: 0 auto;
+}
+.steal_div {
+	margin-top: 1rem;
+}
+
+.nextButton {
+	padding: 0.5rem 1rem;
+	border: 2px solid #333;
+	border-radius: 5px;
+	background-color: lightgreen;
+}
+
+/* UNO Cards */
+.Card {
+	width: 6rem;
+	margin: 2px;
+	cursor: pointer;
+}
+
+/* Game.js Top Row */
+.topInfo {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 0 60px;
+	height: 100px;
+}
+
+.topInfo > img {
+	width: 7%;
+	margin: 0;
+	padding: 0;
+}
+
+.topInfo > h1 {
+	margin-top: 10px;
+	font-size: 1.8rem;
+	padding-top: 2%;
+}
+
+.topInfoText {
+	font-size: 2rem;
+	margin: 0;
+}
+
+/* Player Decks */
+.player1Deck {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.player1Deck > img {
+	transition: transform 350ms;
+}
+
+.player1Deck > img:hover {
+	transform: scale(1.08);
+	opacity: 1;
+}
+
+.player2Deck {
+	display: flex;
+	flex-direction: row-reverse;
+	align-items: center;
+}
+
+.player2Deck > img {
+	transition: transform 350ms;
+}
+
+.player2Deck > img:hover {
+	transform: scale(1.08);
+	opacity: 1;
+}
+
+.playerDeckText {
+	font-size: 2rem;
+	margin: 0 20px;
+}
+
+/* Game.js Middle Row */
+.middleInfo {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.middleInfo > button {
+	align-self: center;
+}
