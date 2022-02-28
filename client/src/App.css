@@ -16,8 +16,9 @@ a {
 	height: 100vh;
 }
 .mainView {
-	width: 1000px;
+	max-width: 1000px;
 	margin: 0 auto;
+	padding: 0 1rem;
 }
 
 .playerSection {
@@ -127,12 +128,15 @@ div.cardPlay2 {
 	display: flex;
 	gap: 0.5rem;
 	justify-content: center;
+	max-height: 6rem;
+	overflow: hidden;
 }
 .cardImg2 {
 	width: 20%;
 	max-width: 35%;
 	border: 1px solid #666;
 	border-radius: 5px;
+	height: 100%;
 }
 .cardImg2a {
 	width: 17%;
