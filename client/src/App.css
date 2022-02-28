@@ -131,6 +131,10 @@ div.cardPlay2 {
 	max-height: 6rem;
 	overflow: hidden;
 }
+.no-flexbox-gap .oldImages_div img:not(:last-child) {
+	margin-right: 0.5rem;
+}
+
 .cardImg2 {
 	width: 20%;
 	max-width: 35%;
