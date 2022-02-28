@@ -49,14 +49,14 @@ const PlayerCard = (props) => {
 					)}
 				</div>
 				<div className={`cardPlay2 ${props.data.showTie}`}>
-					{props.data.currplay && props.data.currplay.length >= 1 && (
+					{props.data.currplay && props.data.currplay.length >= 4 && (
 						<>
 							<div className="oldImages_div">
 								<img
 									className="cardImg2"
 									src={
 										require(`../assets/cards-img/${props.data.currplay[
-											props.data.currplay.length - 1
+											props.data.currplay.length - 4
 										].toLowerCase()}.png`).default
 									}
 								></img>
@@ -64,7 +64,7 @@ const PlayerCard = (props) => {
 									className="cardImg2a"
 									src={
 										require(`../assets/cards-img/${props.data.currplay[
-											props.data.currplay.length - 1
+											props.data.currplay.length - 3
 										].toLowerCase()}.png`).default
 									}
 								></img>
@@ -72,7 +72,7 @@ const PlayerCard = (props) => {
 									className="cardImg2a"
 									src={
 										require(`../assets/cards-img/${props.data.currplay[
-											props.data.currplay.length - 1
+											props.data.currplay.length - 2
 										].toLowerCase()}.png`).default
 									}
 								></img>
@@ -90,17 +90,20 @@ const PlayerCard = (props) => {
 						</>
 					)}
 				</div>
+				<div className={`loserMode ${props.data.showLoserText}`}>LOSS</div>
+				<span></span>
+				<div className={`winnerMode ${props.data.showWinnerText}`}>WINNER!</div>
 			</div>
 
 			<br />
 			<div className={`rnd_result ${props.data.rndResult}`}>
 				{props.data.rndResult.toUpperCase()}
 			</div>
-			<div className="steal_div">
+			{/* <div className="steal_div">
 				<a href="/">
 					<button className="steal-button">STEAL</button>
 				</a>
-			</div>
+			</div> */}
 		</div>
 	);
 };

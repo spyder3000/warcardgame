@@ -15,8 +15,12 @@ a {
 	margin: 0;
 	height: 100vh;
 }
-.playerSection {
+.mainView {
 	width: 1000px;
+	margin: 0 auto;
+}
+
+.playerSection {
 	margin: 1rem auto 0;
 	display: grid; /* to display icon & text in vertical center */
 	grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -33,70 +37,84 @@ a {
 	border: 1px solid #bbb;
 }
 .playerCard0 {
-	background-color: darkseagreen;
+	background-color: #6dae89;
 }
 .playName {
 	color: #eee;
 	height: 2rem;
 	padding-bottom: 1rem;
 }
+
+/* Draw Pile & Win Pile at top of Player Section */
 .cardPiles {
 	display: flex;
 	width: 100%;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-around;
 	gap: 0.5rem;
 	margin: 1rem 0;
 }
 
-.cardPileUp {
-	position: relative;
-}
-
 .cardPileDown {
 	position: relative;
+	width: 50%;
 }
 .numDown {
 	position: absolute;
-	top: -10px;
-	left: -5px;
+	top: -15px;
+	left: 0px;
 	color: #333;
 }
+
+.cardPileUp {
+	position: relative;
+	width: 40%;
+	padding-top: 1rem;
+}
+
 .numUp {
 	position: absolute;
-	top: -26px;
+	top: -15px;
 	left: -10px;
 	color: #333;
 }
 
 .cardImg0a {
-	width: 7rem;
+	width: 80%;
 	max-width: 100%;
 }
 .cardImg0b {
-	width: 5rem;
+	width: 65%;
 	max-width: 100%;
-	border: 2px solid #333;
+	border: 1px solid #666;
 	border-radius: 5px;
 }
 .cardImgBlank {
-	width: 80px;
+	width: 65%;
 	max-width: 100%;
-	border: 2px solid #333;
+	border: 1px solid #666;
 	border-radius: 5px;
 }
+
+/* MAIN UP Card for each player */
 .currentPlay {
-	height: 20rem;
+	min-height: 40vh;
+	overflow: hidden;
+	position: relative;
 }
 .hideme {
 	display: none;
 }
 
+/* The flipped up card at start of each round */
 .cardImg1 {
-	width: 16rem;
+	width: 75%;
 	max-width: 85%;
+	border: 1px solid #666;
+	border-radius: 8px;
 }
 
+/* cardPlay2 is the TieBreak section -- hidden by default */
 div.cardPlay2 {
 	display: none;
 }
@@ -104,6 +122,7 @@ div.cardPlay2 {
 	display: block !important;
 }
 
+/*  TIED Cards (3 cards at top) -- tied card, downcard1 & downcard2 */
 .oldImages_div {
 	display: flex;
 	gap: 0.5rem;
@@ -112,19 +131,57 @@ div.cardPlay2 {
 .cardImg2 {
 	width: 20%;
 	max-width: 35%;
+	border: 1px solid #666;
+	border-radius: 5px;
 }
 .cardImg2a {
-	width: 12%;
+	width: 17%;
 	max-width: 25%;
 	height: 80%;
-	opacity: 0.5;
+	opacity: 0.9;
 }
+/*  Tie-breaker card -- the flipped up card to break the tie  */
 .cardImg2b {
-	width: 70%;
-	max-width: 70%;
+	width: 65%;
+	max-width: 65%;
 	margin-top: 1rem;
+	border: 2px solid #666;
+	border-radius: 8px;
 }
 
+/* ELIMINATED PLAYERS */
+.loserMode {
+	font-size: 130%;
+	color: #333;
+	margin: 35% auto 0;
+	width: 50%;
+	background-color: #ddd;
+	display: none;
+	border-radius: 5px;
+}
+.loserMode.showLoserText {
+	display: block !important;
+}
+
+/* WINNER */
+.winnerMode {
+	font-size: 230%;
+	color: #333;
+	margin88: 28% auto 0;
+	margin: 28% -2rem 0;
+	width88: 90%;
+	width: 125%;
+	background-color: lime;
+	display: none;
+	border-radius88: 5px;
+	border: 2px solid #333;
+	transform: rotate(-20deg);
+}
+.winnerMode.showWinnerText {
+	display: block !important;
+}
+
+/* Round Result SEction -- e.g. Win or Tie message */
 .rnd_result {
 	height: 20px;
 }
@@ -147,89 +204,78 @@ div.cardPlay2 {
 	margin-top: 1rem;
 }
 
+/* Round Update Message */
+.messageSection {
+	margin: 1rem 0 0 0.5rem;
+}
+.msg-removed {
+	color: #ddd;
+	margin-right: 2rem;
+}
+.msg-misc {
+	color: yellow;
+	margin-right: 2rem;
+}
+.msg-round-win {
+	color: darkblue;
+	margin-right: 1rem;
+}
+.msg-winner {
+	color: #fff;
+	margin-right: 1rem;
+	font-size: 125%;
+}
+
+/* CARD REmoval Section */
+.removedCardSection {
+	display: flex;
+	gap: 2rem;
+	background-color: #c0dccd; /* tint for seagreen (##2E8B57)  */
+	border-radius: 5px;
+	margin-top: 0.5rem;
+}
+.intro-remove {
+	width: 20%;
+	text-align: right;
+}
+.data-remove {
+	width: 70%;
+	text-align: left;
+}
+.card-value88 {
+	margin-right: 0.5rem;
+}
+.remove-comma {
+	color: #333 !important;
+}
+span.suit-hearts,
+span.suit-diams {
+	color: red;
+}
+span.suit-spades::after {
+	content: "♠️";
+}
+span.suit-hearts::after {
+	content: "♥️";
+}
+span.suit-clubs::after {
+	content: "♣️";
+}
+span.suit-diams::after {
+	content: "♦️";
+}
+
+/* NEXT Button Section */
 .nextButton {
 	padding: 0.5rem 1rem;
 	border: 2px solid #333;
 	border-radius: 5px;
 	background-color: lightgreen;
 }
-
-/* UNO Cards */
-.Card {
-	width: 6rem;
-	margin: 2px;
-	cursor: pointer;
-}
-
-/* Game.js Top Row */
-.topInfo {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	padding: 0 60px;
-	height: 100px;
-}
-
-.topInfo > img {
-	width: 7%;
-	margin: 0;
-	padding: 0;
-}
-
-.topInfo > h1 {
-	margin-top: 10px;
-	font-size: 1.8rem;
-	padding-top: 2%;
-}
-
-.topInfoText {
-	font-size: 2rem;
-	margin: 0;
-}
-
-/* Player Decks */
-.player1Deck {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-
-.player1Deck > img {
-	transition: transform 350ms;
-}
-
-.player1Deck > img:hover {
-	transform: scale(1.08);
-	opacity: 1;
-}
-
-.player2Deck {
-	display: flex;
-	flex-direction: row-reverse;
-	align-items: center;
-}
-
-.player2Deck > img {
-	transition: transform 350ms;
-}
-
-.player2Deck > img:hover {
-	transform: scale(1.08);
-	opacity: 1;
-}
-
-.playerDeckText {
-	font-size: 2rem;
-	margin: 0 20px;
-}
-
-/* Game.js Middle Row */
-.middleInfo {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-}
-
-.middleInfo > button {
-	align-self: center;
+/* NEXT Button Section */
+.newGame-Button {
+	padding: 0.5rem 1rem;
+	border: 2px solid #333;
+	border-radius: 5px;
+	background-color: lime;
 }
