@@ -178,7 +178,7 @@ div.cardPlay2 {
 	margin88: 28% auto 0;
 	margin: 28% -2rem 0;
 	width88: 90%;
-	width: 125%;
+	width: 130%;
 	background-color: lime;
 	display: none;
 	border-radius88: 5px;
@@ -246,6 +246,11 @@ div.cardPlay2 {
 	width: 20%;
 	text-align: right;
 }
+/* FIX to flexbox gap issue for iPad */
+.no-flexbox-gap .intro-remove {
+	margin-right: 2rem;
+}
+
 .data-remove {
 	width: 70%;
 	text-align: left;

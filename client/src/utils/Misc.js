@@ -239,7 +239,7 @@ export default class Misc {
 			p.status = "loss";
 			return tmpRemoves;
 		}
-		if (p.deck <= tot) {
+		if (p.deck.length <= tot) {
 			Misc.shufflePile(p);
 		}
 		let x = 0;
