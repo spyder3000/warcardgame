@@ -7,6 +7,7 @@ import Spinner from "./Spinner";
 import PlayerCard from "./PlayerCard";
 import RemovedCards from "./RemovedCards";
 import Messages from "./Messages";
+import HelpPage from "./HelpPage";
 
 const Game = (props) => {
 	const data = queryString.parse(props.location.search);
@@ -15,6 +16,7 @@ const Game = (props) => {
 	const [gameOver, setGameOver] = useState("false");
 	const [winner, setWinner] = useState("");
 	const [turn, setTurn] = useState("");
+	const [helpToggle, setHelpToggle] = useState("hideMe");
 
 	const [removedCards, setRemovedCards] = useState([]);
 	const [removedCardsPlus, setRemovedCardsPlus] = useState([]);
@@ -35,6 +37,7 @@ const Game = (props) => {
 		currplay: [], // cards played during the current round
 		status: "active",
 		rndResult: "", // e.g. win, tie, ''
+		rndRemoves: [], // will hold the cards discarded in a round due to Rule 4
 		showTie: "", // Show Tie section;  empty unless player is in tiebreaker situation
 		hideRound: "", // Hide Round data (for players not in tiebreaker, or if eliminated from game)
 	});
@@ -45,6 +48,7 @@ const Game = (props) => {
 		currplay: [],
 		status: "active",
 		rndResult: "",
+		rndRemoves: [],
 		showTie: "",
 		hideRound: "",
 	});
@@ -55,6 +59,7 @@ const Game = (props) => {
 		currplay: [],
 		status: "active",
 		rndResult: "",
+		rndRemoves: [],
 		showTie: "",
 		hideRound: "",
 	});
@@ -65,6 +70,7 @@ const Game = (props) => {
 		currplay: [],
 		status: "active",
 		rndResult: "",
+		rndRemoves: [],
 		showTie: "",
 		hideRound: "",
 	});
@@ -131,15 +137,28 @@ const Game = (props) => {
 		console.log("New Game click");
 		window.location.reload();
 	};
+	const onEditHandler = () => {
+		console.log("Edit button click");
+	};
+	const onHelpHandler = () => {
+		console.log("Help button click");
+		if (helpToggle == "showMe") setHelpToggle("hideMe");
+		else setHelpToggle("showMe");
+	};
+	const onCloseHelp = () => {
+		console.log("Help Close click");
+		setHelpToggle("hideMe");
+	};
+
 	const onNextHandler = () => {
 		console.log("Next button click");
 
 		// Setup temporary arrays to hold data until time to apply changes via setState
 		const tmpPlayer = [];
-		tmpPlayer.push({ ...player1Data, activity: "" });
-		tmpPlayer.push({ ...player2Data, activity: "" });
-		tmpPlayer.push({ ...player3Data, activity: "" });
-		tmpPlayer.push({ ...player4Data, activity: "" });
+		tmpPlayer.push({ ...player1Data, activity: "", rndRemoves: [] });
+		tmpPlayer.push({ ...player2Data, activity: "", rndRemoves: [] });
+		tmpPlayer.push({ ...player3Data, activity: "", rndRemoves: [] });
+		tmpPlayer.push({ ...player4Data, activity: "", rndRemoves: [] });
 		const tmpRemoves = [];
 
 		for (let i = 0; i < numPlayers; i++) {
@@ -147,10 +166,12 @@ const Game = (props) => {
 				Misc.checkNumCards(tmpPlayer[i], lastRound.result); // 2nd param unneeded?
 			}
 		}
+		// Rule 4 process -- remove 1 card from each player for each 4 played in prev round
 		if (lastRound.totFours > 0) {
 			for (let j = 0; j < numPlayers; j++) {
 				if (tmpPlayer[j].status == "active") {
 					let tmp_arr = Misc.removeCardsRule4(tmpPlayer[j], lastRound.totFours);
+					tmpPlayer[j].rndRemoves.push(...tmp_arr);
 					tmpRemoves.push(...tmp_arr);
 				}
 			}
@@ -291,6 +312,10 @@ const Game = (props) => {
 				currplay: tmpPlayer[0].modCurr,
 				winpile: tmpPlayer[0].winpile,
 				rndResult: tmpPlayer[0].rndResult,
+				rndRemoves:
+					activePlayers.length > 1
+						? Misc.addCardDetails(tmpPlayer[0].rndRemoves)
+						: [],
 				showTie:
 					lastRound.tiedPlayers.includes(0) && tmpPlayer[0].status !== "win"
 						? "showTie"
@@ -308,6 +333,7 @@ const Game = (props) => {
 				status: tmpPlayer[0].status,
 				showTie: "",
 				hideRound: "hideme",
+				rndRemoves: [],
 			});
 		}
 
@@ -319,6 +345,10 @@ const Game = (props) => {
 				currplay: tmpPlayer[1].modCurr,
 				winpile: tmpPlayer[1].winpile,
 				rndResult: tmpPlayer[1].rndResult,
+				rndRemoves:
+					activePlayers.length > 1
+						? Misc.addCardDetails(tmpPlayer[1].rndRemoves)
+						: [],
 				showTie:
 					lastRound.tiedPlayers.includes(1) && tmpPlayer[1].status !== "win"
 						? "showTie"
@@ -336,6 +366,7 @@ const Game = (props) => {
 				status: tmpPlayer[1].status,
 				showTie: "",
 				hideRound: "hideme",
+				rndRemoves: [],
 			});
 		}
 
@@ -347,6 +378,10 @@ const Game = (props) => {
 				currplay: tmpPlayer[2].modCurr,
 				winpile: tmpPlayer[2].winpile,
 				rndResult: tmpPlayer[2].rndResult,
+				rndRemoves:
+					activePlayers.length > 1
+						? Misc.addCardDetails(tmpPlayer[2].rndRemoves)
+						: [],
 				showTie:
 					lastRound.tiedPlayers.includes(2) && tmpPlayer[2].status !== "win"
 						? "showTie"
@@ -364,6 +399,7 @@ const Game = (props) => {
 				status: tmpPlayer[2].status,
 				showTie: "",
 				hideRound: "hideme",
+				rndRemoves: [],
 			});
 		}
 
@@ -375,6 +411,10 @@ const Game = (props) => {
 				currplay: tmpPlayer[3].modCurr,
 				winpile: tmpPlayer[3].winpile,
 				rndResult: tmpPlayer[3].rndResult,
+				rndRemoves:
+					activePlayers.length > 1
+						? Misc.addCardDetails(tmpPlayer[3].rndRemoves)
+						: [],
 				showTie:
 					lastRound.tiedPlayers.includes(3) && tmpPlayer[3].status !== "win"
 						? "showTie"
@@ -392,6 +432,7 @@ const Game = (props) => {
 				status: tmpPlayer[3].status,
 				showTie: "",
 				hideRound: "hideme",
+				rndRemoves: [],
 			});
 		}
 
@@ -410,7 +451,30 @@ const Game = (props) => {
 
 	return (
 		<div className="mainView">
-			<h1>WAR CardGame</h1>
+			<header className="header">
+				<h1 className="h1_title">WAR CardGame</h1>
+				<div className="nav_buttons">
+					<button className="btn_options" onClick={onEditHandler}>
+						{" "}
+						<ion-icon class="feature-icon" name="book-outline">
+							{" "}
+						</ion-icon>
+					</button>
+					<button className="btn_help" onClick={onHelpHandler}>
+						{" "}
+						<ion-icon class="feature-icon" name="help-outline">
+							{" "}
+						</ion-icon>
+					</button>
+					<HelpPage helpToggle={helpToggle} closeHelp={onCloseHelp} />
+					{/* <div class="fullscreen-container">
+						<div id="popdiv">
+							<h1>Dialog content!</h1>
+							<button id="but2">Close dialog</button>
+						</div>
+					</div> */}
+				</div>
+			</header>
 			<div className="playerSection">
 				<PlayerCard data={player1Data} name={"Player 1"} id={0} />
 				<PlayerCard data={player2Data} name={"Player 2"} id={1} />
@@ -422,6 +486,7 @@ const Game = (props) => {
 			</div>
 
 			<div className="removedCardSection">
+				<div className="intro-remove">Removed Cards: </div>
 				<RemovedCards data={removedCardsPlus} />
 			</div>
 

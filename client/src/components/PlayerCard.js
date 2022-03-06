@@ -1,4 +1,5 @@
 import React from "react";
+import RemovedCards from "./RemovedCards";
 
 const PlayerCard = (props) => {
 	console.log("PlayerCard.js ***");
@@ -34,7 +35,6 @@ const PlayerCard = (props) => {
 					<div className="numUp">{props.data.winpile.length}</div>
 				</div>
 			</div>
-
 			<div className="currentPlay">
 				<div className={`cardPlay1 ${props.data.hideRound}`}>
 					{props.data.currplay && props.data.currplay.length > 0 && (
@@ -94,8 +94,17 @@ const PlayerCard = (props) => {
 				<span></span>
 				<div className={`winnerMode ${props.data.showWinnerText}`}>WINNER!</div>
 			</div>
-
 			<br />
+			{props.data.rndRemoves && props.data.rndRemoves.length > 0 ? (
+				<div className="pRemoves">
+					<span>
+						<RemovedCards data={props.data.rndRemoves} /> &nbsp;&nbsp; removed
+					</span>
+				</div>
+			) : (
+				<div className="pRemovesDummy"></div>
+			)}
+
 			<div className={`rnd_result ${props.data.rndResult}`}>
 				{props.data.rndResult.toUpperCase()}
 			</div>

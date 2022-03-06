@@ -6,7 +6,6 @@ const RemovedCards = (props) => {
 
 	return (
 		<>
-			<div className="intro-remove">Removed Cards: </div>
 			<div className="data-remove">
 				{props.data.map((crd, index) => {
 					{
