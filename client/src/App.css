@@ -45,20 +45,27 @@ button.btn_help {
 }
 #pophelp {
 	position: fixed;
-	width: 500px;
+	width: 250px;
 	/* height: 200px; */
-	top: 10%;
+	top: 55%;
 	left: 50%;
 	/* margin-top: 100px; Negative half of height. */
-	margin-left: -250px; /* Negative half of width. */
+	margin-left: -125px; /* Negative half of width. */
 
-	background-color: #fff;
-	border: 3px solid darkblue;
+	background-color: #ff7777;
+	background-color88: #ccc;
+	border: 3px solid #333;
 	border-radius: 5px;
 	z-index: 100;
-	padding: 2rem 2rem 2rem 4rem;
+	padding: 1rem 1rem 1rem 1rem;
 	text-align: left;
-	color: darkblue;
+	color: #333;
+}
+#stealBtn {
+	margin-right: 0.5rem;
+	border: 1px solid #333;
+	border-radius: 3px;
+	padding: 3px;
 }
 
 #pophelp h1 {
@@ -75,6 +82,9 @@ button.btn_help {
 }
 .helpDiv {
 	display: none;
+}
+.stealDiv {
+	display: block;
 }
 .showMe {
 	display: block !important;
@@ -307,8 +317,14 @@ div.data-remove {
 	margin-right: 2rem;
 }
 .msg-misc {
-	color: yellow;
+	color: palegreen;
 	margin-right: 2rem;
+}
+.msg-steal {
+	color: ghostwhite;
+}
+.msg-steal2 {
+	color: #333;
 }
 .msg-round-win {
 	color: darkblue;
@@ -328,6 +344,13 @@ div.data-remove {
 	border-radius: 5px;
 	margin-top: 0.5rem;
 }
+.totRemovedCards {
+	font-size: 90%;
+	color: blue;
+	margin-left: 0.5rem;
+	font-weight: normal;
+}
+
 .intro-remove {
 	width: 20%;
 	text-align: right;

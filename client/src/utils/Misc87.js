@@ -199,20 +199,82 @@ export default class Misc {
 		player.activity = "y";
 	};
 
+	// static tieProcess = (p) => {
+	// 	let tot = Misc.getTotCards(p);
+	// 	p.activity = "y";
+	// 	if (tot < 3) {
+	// 		console.log("LOSS (tieProcess) for player - " + p.id);
+	// 		p.status = "loss";
+	// 		p.modCurr = [];
+	// 		if (tot == 0) p.modCurr.push("none", "none", "none");
+	// 		else if (tot == 1)
+	// 			p.modCurr.push(...p.deck, ...p.winpile, "none", "none");
+	// 		else if (tot == 2) p.modCurr.push(...p.deck, ...p.winpile, "none");
+	// 		p.deck = [];
+	// 	} else {
+	// 		if (p.deck.length < 3) Misc.shufflePile(p);
+	// 		let cards = [p.deck[0], p.deck[1], p.deck[2]];
+	// 		p.deck = p.deck.slice(3);
+	// 		p.modCurr = [];
+	// 		p.modCurr.push(...p.currplay, ...cards);
+	// 	}
+	// };
+
 	static checkNumCards = (p) => {
 		if (Misc.getTotCards(p) == 0) {
 			console.log("LOSS (checkNumCards) for player - " + p.id);
 			p.status = "loss";
-			p.currplay = [];
 			p.activity = "y";
 			return;
 		}
-		// REMOVE THIS ???
 		if (p.deck.length == 0 || (p.deck.length < 3 && p.rndResult == "tie")) {
 			Misc.shufflePile(p);
 			p.activity = "y";
 		}
 	};
+
+	// static removeCardsRule4 = (p, tot) => {
+	// 	const tmpRemoves = [];
+	// 	p.activity = "y";
+	// 	if (Misc.getTotCards(p) <= tot) {
+	// 		tmpRemoves.push(...p.deck, ...p.winpile);
+	// 		console.log("LOSS (rules4) for player - " + p.id);
+	// 		p.deck = [];
+	// 		p.winpile = [];
+	// 		p.status = "loss";
+	// 		return tmpRemoves;
+	// 	}
+	// 	if (p.deck.length <= tot) {
+	// 		Misc.shufflePile(p);
+	// 	}
+	// 	let x = 0;
+	// 	while (x < tot) {
+	// 		let card = p.deck[0]; // get Top card from Deck
+	// 		p.deck = p.deck.slice(1); // Remove that card from pile
+	// 		tmpRemoves.push(card);
+	// 		x++;
+	// 	}
+	// 	return tmpRemoves;
+	// };
+
+	// static getCard = (p, typ) => {
+	// 	p.activity = "y";
+	// 	if (typ == "new") p.modCurr = []; // new round;  start with empty array for Current Round cards
+
+	// 	if (Misc.getTotCards(p) == 0) {
+	// 		console.log("LOSS (getCard) for player - " + p.id);
+	// 		p.status = "loss";
+	// 		return;
+	// 	}
+	// 	if (p.deck == 0) {
+	// 		Misc.shufflePile(p);
+	// 	}
+
+	// 	let card = p.deck[0]; // get Top card from Deck
+	// 	p.deck = p.deck.slice(1); // Remove that card from pile
+	// 	p.modCurr.push(card); // set modCurr to include this card
+	// 	return card;
+	// };
 
 	static addCardDetails = (arr) => {
 		const bigarray = [];
@@ -234,44 +296,35 @@ export default class Misc {
 		return bigarray;
 	};
 
-	static stealPile88 = (p, iwin, ilose) => {
+	static stealPile = (p, iwin, ilose) => {
 		console.log(
 			"Steal Pile -- player " + iwin + " steals from player " + ilose
 		);
 		let crd = p[iwin].currplay[p[iwin].currplay.length - 1];
 		p[iwin].winpile.push(...p[ilose].winpile, crd);
 		p[ilose].winpile = [];
-		// p[iwin].currplay.push(Misc.getCard(p[iwin]));
-		p[iwin].currplay = p[iwin].currplay.slice(1); // Remove that card from pile
-		p[iwin].getCard();
-		console.log("p-iwin array = " + p[iwin].currplay);
+		p[iwin].currplay.push(Misc.getCard(p[iwin]));
+		// p.activity = "y";
+		// if (typ == "new") p.modCurr = []; // new round;  start with empty array for Current Round cards
+
+		// if (Misc.getTotCards(p) == 0) {
+		// 	console.log("LOSS (getCard) for player - " + p.id);
+		// 	p.status = "loss";
+		// 	return;
+		// }
+		// if (p.deck == 0) {
+		// 	Misc.shufflePile(p);
+		// }
+
+		// let card = p.deck[0]; // get Top card from Deck
+		// p.deck = p.deck.slice(1); // Remove that card from pile
+		// p.modCurr.push(card); // set modCurr to include this card
+		// return card;
 	};
 
 	static async tempDelay(dat) {
 		console.log("ONE");
 		await new Promise((resolve) => setTimeout(resolve, 3000));
 		console.log("TWO");
-	}
-
-	// returns an array of player indexes where pile can be stolen
-	static checkSteals(pnum, tmpPlayer) {
-		let tmpSteals = [];
-		if (tmpPlayer[pnum].currplay.length == 0) return []; // safety check -- can't steal if you don't have an up card
-
-		// gets current card for player i
-		let curr_crd = parseInt(
-			Misc.getNum(Misc.getTopCard(tmpPlayer[pnum].currplay))
-		);
-		for (let i = 0; i < tmpPlayer.length; i++) {
-			if (i == pnum) continue; // can't steal from yourself
-			if (tmpPlayer[i].winpile.length == 0) continue; // can't steal from an empty pile
-
-			// if current card matches top pile on other player's win pile
-			if (Misc.getNum(Misc.getTopCard(tmpPlayer[i].winpile)) == curr_crd) {
-				tmpSteals.push(i);
-				console.log("Steal Pile -- from player " + i);
-			}
-		}
-		return tmpSteals;
 	}
 }

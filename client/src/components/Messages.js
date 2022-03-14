@@ -23,6 +23,10 @@ const Messages = (props) => {
 				<span className="msg-removed">{props.data.msgRemoved}</span>
 				<span className="msg-misc">{props.data.msgMisc}</span>
 				<span className="msg-round-win">{props.data.msgRoundWin}</span>
+				<span className="msg-steal">
+					{props.data.msgSteal}
+					<span className="msg-steal2">{props.data.msgSteal2}</span>
+				</span>
 
 				{props.data.wonCards.map((crd, index) => {
 					{

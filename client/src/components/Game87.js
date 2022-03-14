@@ -18,10 +18,8 @@ const Game = (props) => {
 	//initialize game state
 	const [numPlayers, setNumPlayers] = useState(4);
 	const [gameOver, setGameOver] = useState("false");
-	const [roundNumber, setRoundNumber] = useState(1);
 	const [winner, setWinner] = useState("");
 	const [turn, setTurn] = useState("");
-	const [nextDisabled, setNextDisabled] = useState(false);
 
 	// Display Toggle state vars
 	const [helpToggle, setHelpToggle] = useState("hideMe");
@@ -29,12 +27,7 @@ const Game = (props) => {
 
 	// Steals State vars
 	const [stealTurn, setStealTurn] = useState(-1);
-	const [drawTurn, setDrawTurn] = useState(-1); // for when processing is waiting for a single player to draw a card (after steal)
-	const [availSteals, setAvailSteals] = useState([]);
-	const [finishSteal, setFinishSteal] = useState({ win: -1, lose: -1 }); // used when computer steals pile;  finishes steal in next round
-	const [stealInd, setStealInd] = useState(-1); // used to indicate which player is doing the steal (for Text display)
-
-	// finishSteal,  SETDRAW -- for computer !!!
+	const [availSteals, setAvailSteals] = useState([2, 3]);
 
 	// Removed Cards state vars
 	const [removedCards, setRemovedCards] = useState([]);
@@ -46,15 +39,12 @@ const Game = (props) => {
 		msgWinner: "",
 		msgRemoved: "",
 		msgRoundWin: "",
-		msgSteal: "",
-		msgSteal2: "",
 		msgMisc: "",
 		wonCards: [],
 	});
 
 	// Round State vars
 	const [currentRoundCards, setCurrentRoundCards] = useState([]);
-	const [currRound, setCurrRound] = useState([]);
 	const [lastRound, setLastRound] = useState({
 		result: "", // win or tie or all-lose (if all players in tiebreaker cannot continue)
 		id: -1, // win player id OR -1
@@ -150,6 +140,7 @@ const Game = (props) => {
 
 	// Functions to update State
 	const modPlayer = (i, dat) => {
+		console.log("Mod Player = " + i);
 		if (i == 0) {
 			setPlayer1Data({
 				...player1Data,
@@ -171,32 +162,6 @@ const Game = (props) => {
 				...dat,
 			});
 		}
-	};
-
-	/* REMOVE pile logic -- add removed cards from Rule 4 & from ties with no winners */
-
-	// JV NOTE -- modify this to fn -- in case we have 2 modRemoves called in the same action ???
-	const modRemoves = (tmpRemoves) => {
-		console.log("** tmpRemoves = " + tmpRemoves);
-		let removedBigArray = Misc.addCardDetails([...removedCards, ...tmpRemoves]);
-		setRemovedCardsPlus([...removedBigArray]);
-		setRemovedCards([...removedCards, ...tmpRemoves]);
-	};
-
-	const modLastRound = (tmpLast) => {
-		console.log("called ModLastRound");
-		setLastRound({ ...lastRound, ...tmpLast });
-	};
-
-	// COPY function
-	const playerCopy = () => {
-		// Setup temporary arrays to hold data until time to apply changes via setState
-		const tmpPlayer = [];
-		tmpPlayer[0] = new Player(player1Data);
-		tmpPlayer[1] = new Player(player2Data);
-		tmpPlayer[2] = new Player(player3Data);
-		tmpPlayer[3] = new Player(player4Data);
-		return tmpPlayer;
 	};
 
 	// EVENT HANDLERS
@@ -225,91 +190,25 @@ const Game = (props) => {
 		const tmpPlayer = playerCopy();
 		if (val == "cancel") setStealTurn(1);
 		// steal option moves to player 2
-		else {
-			// stealPile(tmpPlayer, 0, parseInt(val));
-			stealPileMsg(tmpPlayer[0], tmpPlayer[parseInt(val)]);
-			stealPile(tmpPlayer[0], tmpPlayer[parseInt(val)]);
-			setStealTurn(0); // steal option remains with player 0, pending next card they turn up
-			setDrawTurn(0);
-			setStealInd(0);
-			modPlayer(0, {
-				currplay: tmpPlayer[0].currplay,
-				winpile: tmpPlayer[0].winpile,
-				deck: tmpPlayer[0].deck,
-				activity: tmpPlayer[0].activity,
-				// rndResult: "Steal",
-			});
-			modPlayer(val, {
-				winpile: tmpPlayer[val].winpile,
-				activity: tmpPlayer[val].activity,
-				// rndResult: "",
-			});
-		}
+		else Misc.stealPile(tmpPlayer, 0, val);
+
 		setStealToggle("hideMe");
-		setNextDisabled(false);
 	};
 
-	const stealPile = (pwin, plose) => {
-		console.log("Steal Pile -- " + pwin.name + " steals from " + plose.name);
-		let crd = Misc.getTopCard(pwin.currplay);
-		pwin.winpile.push(...plose.winpile, crd);
-		plose.winpile = [];
-		// p[iwin].currplay.push(Misc.getCard(p[iwin]));
-		pwin.currplay = pwin.currplay.slice(1); // Remove that card from pile
-		pwin.getCard();
-		console.log("p-iwin array = " + pwin.currplay);
-	};
-	const stealPileMsg = (pwin, plose) => {
-		console.log(
-			"Steal Pile Message -- " + pwin.name + " steals from " + plose.name
-		);
-		let w = pwin.name + " steals from " + plose.name;
-		let w2 = " -- Total cards won = " + plose.winpile.length;
-		setMsgData({
-			...msgData,
-			msgRemoved: "",
-			msgRoundWin: "",
-			msgMisc: "",
-			wonCards: [],
-			msgSteal: w,
-			msgSteal2: w2,
-		});
-	};
-
-	// called for computer steal when finishSteal values are populated;  p0 is win player; p1 is lose player
-	const doComputerSteal = (p0, p1) => {
-		let i = p0.id; // winner id
-		let j = p1.id; // loser id
-		stealPile(p0, p1);
-		modPlayer(i, {
-			currplay: p0.currplay,
-			winpile: p0.winpile,
-			deck: p0.deck,
-			activity: p0.activity,
-		});
-		modPlayer(j, {
-			winpile: p1.winpile,
-			activity: p1.activity,
-		});
+	const playerCopy = () => {
+		// Setup temporary arrays to hold data until time to apply changes via setState
+		const tmpPlayer = [];
+		tmpPlayer[0] = new Player(player1Data);
+		tmpPlayer[1] = new Player(player2Data);
+		tmpPlayer[2] = new Player(player3Data);
+		tmpPlayer[3] = new Player(player4Data);
+		return tmpPlayer;
 	};
 
 	const onNextHandler = () => {
 		console.log("Next button click");
-		console.log("* LASTROUND *");
-		console.log(lastRound);
-
 		const tmpPlayer = playerCopy();
 		const tmpRemoves = [];
-
-		// This needs to be reset so we're not suppressing the 1st drawn cards in round
-		if (lastRound.result == "win") {
-			for (let i = 0; i < numPlayers; i++) {
-				console.log("Cleanup prev round");
-				tmpPlayer[i].hideRound = "";
-				tmpPlayer[i].rndResult = "";
-				tmpPlayer[i].showTie = "";
-			}
-		}
 
 		// Initial check that all players have cards to continue
 		for (let i = 0; i < numPlayers; i++) {
@@ -317,7 +216,6 @@ const Game = (props) => {
 				Misc.checkNumCards(tmpPlayer[i], lastRound.result); // 2nd param unneeded?
 			}
 		}
-
 		// Rule 4 process -- remove 1 card from each player for each 4 played in prev round
 		if (lastRound.totFours > 0) {
 			for (let j = 0; j < numPlayers; j++) {
@@ -326,141 +224,76 @@ const Game = (props) => {
 					let tmp_arr = tmpPlayer[j].removeCardsRule4(lastRound.totFours);
 					tmpRemoves.push(...tmp_arr);
 
-					// Modify player based on Remove Cards
-					modPlayer(j, {
-						deck: tmpPlayer[j].deck,
-						// status: tmpPlayer[j].status,
-						winpile: tmpPlayer[j].winpile,
-						rndRemoves: Misc.addCardDetails(tmpPlayer[j].rndRemoves),
-						activity: tmpPlayer[j].activity,
-						rndResult: "",
-					});
-					modRemoves(tmpRemoves);
-					modLastRound({ totFours: 0 });
+					// Add logic to remove cards via setState HERE
 				}
 			}
-			return;
 		}
 
 		// Draw Cards for Active players
-		const tempCurrRound = new GameRound(currRound); // empty if a new round;  otherwise currRound is saved from prior to steal
-
-		// For player that just stole pile, draw a new card
-		if (currRound.length > 0) {
-			console.log("CURR RUOUND " + currRound.length);
-
-			// Computer Steal from previous round;  Finish steal
-			if (finishSteal.win > -1)
-				doComputerSteal(
-					tmpPlayer[finishSteal.win],
-					tmpPlayer[finishSteal.lose]
-				);
-
-			console.log("drawTurn = " + drawTurn);
-			if (drawTurn > -1) {
-				let card = Misc.getTopCard(tmpPlayer[drawTurn].currplay);
-				tempCurrRound.replaceTopCard(drawTurn, card);
-			}
-		} else {
-			for (let i = 0; i < numPlayers; i++) {
-				// Only Draw Cards for Active Players;  If a Tie from prev round, only include players that are part of the tie;
-				if (tmpPlayer[i].status == "active") {
-					if (lastRound.result !== "tie" || lastRound.tiedPlayers.includes(i)) {
-						tmpPlayer[i].currRound = "yes";
-						let card;
-						let downcards = [];
-						// IF starting a New Round
-						if (lastRound.result !== "tie") {
-							card = tmpPlayer[i].getCard("new"); // param indicates this is a new round;  clear out currplay array
-							tmpPlayer[i].hideRound = "";
-						}
-						// TIE scenario (tie from prev round)
-						else {
-							tmpPlayer[i].getTieCards();
-							card = tmpPlayer[i].currplay[tmpPlayer[i].currplay.length - 1]; // get last card in current array
-							downcards.push(
-								tmpPlayer[i].currplay[tmpPlayer[i].currplay.length - 2],
-								tmpPlayer[i].currplay[tmpPlayer[i].currplay.length - 3]
-							);
-							tmpPlayer[i].hideRound = "hideme";
-							tmpPlayer[i].showTie = "showTie";
-						}
-
-						console.log("TEMPCurrRound = " + i + "; card = " + card);
-						tempCurrRound.addPlayerCards({ id: i, card, downcards });
-
-						// Modify current cards shown -- MAYBE ADD THIS back??? OR include later??
-						console.log("ModiFY player " + i);
-						// modPlayer(i, {
-						// 	currplay: tmpPlayer[i].currplay,
-						// 	deck: tmpPlayer[i].deck,
-						// 	status: tmpPlayer[i].status,
-						// 	activity: tmpPlayer[i].activity,
-						// 	rndResult: "",
-						// 	hideRound: tmpPlayer[i].hideRound,
-						// 	showTie: tmpPlayer[i].showTie,
-						// });
+		const tempCurrRound = new GameRound();
+		for (let i = 0; i < numPlayers; i++) {
+			// Only Draw Cards for Active Players;  If a Tie from prev round, only include players that are part of the tie;
+			if (tmpPlayer[i].status == "active") {
+				if (lastRound.result !== "tie" || lastRound.tiedPlayers.includes(i)) {
+					tmpPlayer[i].currRound = "yes";
+					let card;
+					let downcards = [];
+					// IF starting a New Round
+					if (lastRound.result !== "tie") {
+						card = tmpPlayer[i].getCard("new"); // param indicates this is a new round;  clear out modCurr array
 					}
+					// TIE scenario (tie from prev round)
+					else {
+						tmpPlayer[i].getTieCards();
+						card = tmpPlayer[i].modCurr[tmpPlayer[i].modCurr.length - 1]; // get last card in current array
+						downcards.push(
+							tmpPlayer[i].modCurr[tmpPlayer[i].modCurr.length - 2],
+							tmpPlayer[i].modCurr[tmpPlayer[i].modCurr.length - 3]
+						);
+					}
+
+					console.log("TEMPCurrRound = " + i + "; card = " + card);
+					tempCurrRound.addPlayerCards({ id: i, card, downcards });
+
+					// Modify current cards shown
+					modPlayer(i, {
+						currplay: tmpPlayer[i].modCurr,
+						deck: tmpPlayer[i].deck,
+						status: tmpPlayer[i].status,
+					});
 				}
 			}
 		}
 
 		/* ---  STEAL SECTION  --- */
-
 		// Check if Steal possibility for Player 1
 		const tmpSteals = [];
-		if (tmpPlayer[0].currRound == "yes" && stealTurn <= 0) {
-			tmpSteals.push(...Misc.checkSteals(0, tmpPlayer)); // returns an array of player indexes where pile can be stolen
-			if (tmpSteals.length > 0) {
-				console.log("WAIT for Steal response - Player 0");
-				setStealToggle("showMe");
-				setAvailSteals(tmpSteals);
-				setCurrRound([...tempCurrRound.data]);
-				setNextDisabled(true);
-				for (let j = 0; j < tmpPlayer.length; j++) {
-					modPlayer(j, {
-						rndRemoves: [],
-						currplay: tmpPlayer[j].currplay,
-						deck: tmpPlayer[j].deck,
-						status: tmpPlayer[j].status,
-						activity: tmpPlayer[j].activity,
-						rndResult: "",
-						hideRound: tmpPlayer[j].hideRound,
-						showTie: tmpPlayer[j].showTie,
-					});
+		if (tmpPlayer[0].currRound == "yes") {
+			// gets current card for player 1
+			let curr_crd = parseInt(
+				Misc.getNum(Misc.getTopCard(tmpPlayer[0].modCurr))
+			);
+			for (let i = 0; i < tmpPlayer.length; i++) {
+				if (i == 0) continue;
+				if (tmpPlayer[i].winpile.length == 0) continue;
+
+				// if current card matches top pile on other player's win pile
+				if (Misc.getNum(Misc.getTopCard(tmpPlayer[i].winpile)) == curr_crd) {
+					tmpPlayer[0].stealOption = "yes";
+					tmpSteals.push(i);
+					console.log("Steal Pile -- from player " + i);
 				}
-				return;
 			}
-			// CAPTURE current round data -- for resume once steal decision is resolved
+		}
+		if (tmpPlayer[0].stealOption == "yes") {
+			console.log("WAIT for Steal response");
+			setStealToggle("showMe");
+			setAvailSteals(tmpSteals);
+			return;
 			// Misc.tempDelay();
 			// console.log("return from WAIT");
 		}
 		console.log("continue");
-
-		// Check if Steal possibility for Players 2 thru 4
-		for (let i = 1; i < tmpPlayer.length; i++) {
-			if (tmpPlayer[i].currRound == "yes") {
-				let victim = Misc.checkSteals(i, tmpPlayer);
-				if (victim.length !== 1) continue;
-				console.log("COMPUTER Steal");
-				// Check if advantageous to steal pile OR (if winning card) to win round
-				// ADD logic
-				setCurrRound([...tempCurrRound.data]);
-				let val = victim[0];
-				stealPileMsg(tmpPlayer[i], tmpPlayer[val]);
-				setFinishSteal({ win: i, lose: val });
-				setStealTurn(i); // steal option remains with current player
-				setDrawTurn(i);
-				setStealInd(i);
-				// modPlayer(i, { rndResult: "Steal" });
-				for (let j = 0; j < tmpPlayer.length; j++) {
-					modPlayer(j, { ...tmpPlayer[j], rndRemoves: [], rndResult: "" });
-				}
-				return;
-			}
-		}
-		//
-		//
 
 		// Get Results from the Current Round
 		const roundResults = Misc.checkCards(
@@ -470,6 +303,7 @@ const Game = (props) => {
 		console.log("roundResults RETURN");
 		console.log(roundResults);
 		const tmpResults = {};
+		const tmpMessage = { msgRemoved: "", msgRoundWin: "", msgMisc: "" };
 		tmpResults.totFours = roundResults.data[0].totFours;
 
 		// DEBUG Alert -- to find 'none' error
@@ -510,17 +344,9 @@ const Game = (props) => {
 			tmpResults.id = -99;
 			tmpRemoves.push(...roundResults.data[0].allCards); // no winner, so all cards in this round sent to Removed Cards
 			tmpResults.tiedPlayers = [];
-			modRemoves(tmpRemoves); // Possibility that this will be 2nd call to modRemoves in same action -- FIX!!!!
 		}
-
-		/* MESSAGES Section */
-		const tmpMessage = {
-			msgRemoved: "",
-			msgRoundWin: "",
-			msgMisc: "",
-			msgSteal: "",
-			msgSteal2: "",
-		};
+		// msgLoser: "",
+		// msgWinner: "",
 		var tmpWonCards = [];
 		if (tmpRemoves.length > 0)
 			tmpMessage.msgRemoved = tmpRemoves.length + " cards removed";
@@ -539,30 +365,17 @@ const Game = (props) => {
 		}
 		/* Check for END of GAME -- trigger Winner if there is one & modify buttons to prevent future moves */
 		let activePlayers = tmpPlayer.filter((arr) => arr.status == "active");
-		let expectedCards = (roundNumber - 1) * 3 + 1; // e.g. 1 card if round 1, 4 cards if round 2, etc
-		let hasCards = tmpPlayer.filter(
-			(arr) => arr.currplay.length >= expectedCards
-		);
-		if (activePlayers.length == 1 && hasCards.length <= 1) {
+		if (activePlayers.length == 1) {
 			tmpPlayer[activePlayers[0].id].status = "win";
 			tmpMessage.msgWinner = "Player " + (activePlayers[0].id + 1) + " Wins!!!";
 		} else if (activePlayers.length == 0) {
 			tmpMessage.msgWinner = "Game Over -- No winner";
 		}
-		if (activePlayers.length <= 1 && hasCards.length <= 1) {
+		if (activePlayers.length <= 1) {
 			setGameOver("true");
 			tmpMessage.msgRemoved = "";
 			tmpMessage.msgMisc = "";
 			tmpMessage.msgRoundWin = "";
-			tmpMessage.steal = "";
-			tmpMessage.steal2 = "";
-		}
-
-		/* Check if deck is empty;  if so, re-shuffle deck & reset winpile (prevents people stealing for player w/ 0 deck cards) */
-		for (let i = 0; i < tmpPlayer.length; i++) {
-			if (tmpPlayer[i].status == "active" && tmpPlayer[i].deck.length == 0) {
-				Misc.shufflePile(tmpPlayer[i]); // 2nd param unneeded?
-			}
 		}
 
 		/* Modify MESSAGE section */
@@ -570,57 +383,146 @@ const Game = (props) => {
 		setMsgData({ ...msgData, ...tmpMessage, wonCards: wonCardsBigArray });
 
 		/* REMOVE pile logic -- add removed cards from Rule 4 & from ties with no winners */
-		// console.log("** tmpRemoves = " + tmpRemoves);
-		// let removedBigArray = Misc.addCardDetails([...removedCards, ...tmpRemoves]);
-		// setRemovedCardsPlus([...removedBigArray]);
-		// setRemovedCards([...removedCards, ...tmpRemoves]);
+		console.log("** tmpRemoves = " + tmpRemoves);
+		let removedBigArray = Misc.addCardDetails([...removedCards, ...tmpRemoves]);
+		setRemovedCardsPlus([...removedBigArray]);
+		setRemovedCards([...removedCards, ...tmpRemoves]);
 
 		// from https://stackoverflow.com/questions/54150783/react-hooks-usestate-with-object
 		// Only update if player participated in the last round
+		if (tmpPlayer[0].activity == "y") {
+			setPlayer1Data({
+				...player1Data,
+				status: tmpPlayer[0].status,
+				deck: tmpPlayer[0].deck,
+				currplay: tmpPlayer[0].modCurr,
+				winpile: tmpPlayer[0].winpile,
+				rndResult: tmpPlayer[0].rndResult,
+				rndRemoves:
+					activePlayers.length > 1
+						? Misc.addCardDetails(tmpPlayer[0].rndRemoves)
+						: [],
+				showTie:
+					lastRound.tiedPlayers.includes(0) && tmpPlayer[0].status !== "win"
+						? "showTie"
+						: "",
+				hideRound:
+					lastRound.result == "tie" || tmpPlayer[0].status == "win"
+						? "hideme"
+						: "",
+				showLoserText: tmpPlayer[0].status == "loss" ? "showLoserText" : "",
+				showWinnerText: tmpPlayer[0].status == "win" ? "showWinnerText" : "",
+			});
+		} else {
+			setPlayer1Data({
+				...player1Data,
+				status: tmpPlayer[0].status,
+				showTie: "",
+				hideRound: "hideme",
+				rndRemoves: [],
+			});
+		}
 
-		console.log("END of round -- lastRound.result = " + lastRound.result);
-		for (let i = 0; i < tmpPlayer.length; i++) {
-			if (tmpPlayer[i].activity == "y") {
-				modPlayer(i, {
-					status: tmpPlayer[i].status,
-					deck: tmpPlayer[i].deck,
-					currplay: tmpPlayer[i].currplay,
-					winpile: tmpPlayer[i].winpile,
-					rndResult: tmpPlayer[i].rndResult,
-					rndRemoves:
-						activePlayers.length > 1
-							? Misc.addCardDetails(tmpPlayer[i].rndRemoves)
-							: [],
-					showTie:
-						lastRound.tiedPlayers.includes(i) && tmpPlayer[i].status !== "win"
-							? "showTie"
-							: "",
-					hideRound:
-						lastRound.result == "tie" || tmpPlayer[i].status == "win"
-							? "hideme"
-							: "",
-					showLoserText:
-						tmpPlayer[i].status == "loss" && tmpPlayer[i].currplay.length == 0
-							? "showLoserText"
-							: "",
-					showWinnerText: tmpPlayer[i].status == "win" ? "showWinnerText" : "",
-					activity: "",
-				});
-			} else {
-				modPlayer(i, {
-					status: tmpPlayer[i].status,
-					showTie: "",
-					hideRound: "hideme",
-					rndRemoves: [],
-					currplay: [],
-					showLoserText: tmpPlayer[i].status == "loss" ? "showLoserText" : "",
-					activity: "",
-				});
-			}
+		if (tmpPlayer[1].activity == "y") {
+			setPlayer2Data({
+				...player2Data,
+				status: tmpPlayer[1].status,
+				deck: tmpPlayer[1].deck,
+				currplay: tmpPlayer[1].modCurr,
+				winpile: tmpPlayer[1].winpile,
+				rndResult: tmpPlayer[1].rndResult,
+				rndRemoves:
+					activePlayers.length > 1
+						? Misc.addCardDetails(tmpPlayer[1].rndRemoves)
+						: [],
+				showTie:
+					lastRound.tiedPlayers.includes(1) && tmpPlayer[1].status !== "win"
+						? "showTie"
+						: "",
+				hideRound:
+					lastRound.result == "tie" || tmpPlayer[1].status == "win"
+						? "hideme"
+						: "",
+				showLoserText: tmpPlayer[1].status == "loss" ? "showLoserText" : "",
+				showWinnerText: tmpPlayer[1].status == "win" ? "showWinnerText" : "",
+			});
+		} else {
+			setPlayer2Data({
+				...player2Data,
+				status: tmpPlayer[1].status,
+				showTie: "",
+				hideRound: "hideme",
+				rndRemoves: [],
+			});
+		}
+
+		if (tmpPlayer[2].activity == "y") {
+			setPlayer3Data({
+				...player3Data,
+				status: tmpPlayer[2].status,
+				deck: tmpPlayer[2].deck,
+				currplay: tmpPlayer[2].modCurr,
+				winpile: tmpPlayer[2].winpile,
+				rndResult: tmpPlayer[2].rndResult,
+				rndRemoves:
+					activePlayers.length > 1
+						? Misc.addCardDetails(tmpPlayer[2].rndRemoves)
+						: [],
+				showTie:
+					lastRound.tiedPlayers.includes(2) && tmpPlayer[2].status !== "win"
+						? "showTie"
+						: "",
+				hideRound:
+					lastRound.result == "tie" || tmpPlayer[2].status == "win"
+						? "hideme"
+						: "",
+				showLoserText: tmpPlayer[2].status == "loss" ? "showLoserText" : "",
+				showWinnerText: tmpPlayer[2].status == "win" ? "showWinnerText" : "",
+			});
+		} else {
+			setPlayer3Data({
+				...player3Data,
+				status: tmpPlayer[2].status,
+				showTie: "",
+				hideRound: "hideme",
+				rndRemoves: [],
+			});
+		}
+
+		if (tmpPlayer[3].activity == "y") {
+			setPlayer4Data({
+				...player4Data,
+				status: tmpPlayer[3].status,
+				deck: tmpPlayer[3].deck,
+				currplay: tmpPlayer[3].modCurr,
+				winpile: tmpPlayer[3].winpile,
+				rndResult: tmpPlayer[3].rndResult,
+				rndRemoves:
+					activePlayers.length > 1
+						? Misc.addCardDetails(tmpPlayer[3].rndRemoves)
+						: [],
+				showTie:
+					lastRound.tiedPlayers.includes(3) && tmpPlayer[3].status !== "win"
+						? "showTie"
+						: "",
+				hideRound:
+					lastRound.result == "tie" || tmpPlayer[3].status == "win"
+						? "hideme"
+						: "",
+				showLoserText: tmpPlayer[3].status == "loss" ? "showLoserText" : "",
+				showWinnerText: tmpPlayer[3].status == "win" ? "showWinnerText" : "",
+			});
+		} else {
+			setPlayer4Data({
+				...player4Data,
+				status: tmpPlayer[3].status,
+				showTie: "",
+				hideRound: "hideme",
+				rndRemoves: [],
+			});
 		}
 
 		// reset data from the current round to be accessed at start of next round
-		console.log("EndRound tmpResults = " + tmpResults);
 		setLastRound({
 			...lastRound,
 			result: tmpResults.result,
@@ -631,17 +533,7 @@ const Game = (props) => {
 			totFours: tmpResults.totFours,
 		});
 		//setPlayer4CurrPlay((player4CurrPlay) => [...player4CurrPlay, card4]);
-
-		// Reset all intermediate variables;  Prepare for next Round
 		setStealTurn(-1);
-		setDrawTurn(-1);
-		setStealInd(-1);
-		setCurrRound([]);
-		setFinishSteal({ win: -1, lose: -1 });
-		setNextDisabled(true);
-		setTimeout(() => setNextDisabled(false), 500);
-		if (tmpResults.result == "win") setRoundNumber(1);
-		else if (tmpResults.result == "tie") setRoundNumber(roundNumber + 1);
 	};
 
 	return (
@@ -692,10 +584,7 @@ const Game = (props) => {
 			</div>
 
 			<div className="removedCardSection">
-				<div className="intro-remove">
-					Removed Cards
-					<span className="totRemovedCards">[{removedCardsPlus.length}]</span>
-				</div>
+				<div className="intro-remove">Removed Cards: </div>
 				<RemovedCards data={removedCardsPlus} />
 			</div>
 
@@ -708,11 +597,7 @@ const Game = (props) => {
 				</div>
 			)) || (
 				<div className="nextButton-div">
-					<button
-						className="nextButton"
-						disabled={nextDisabled}
-						onClick={onNextHandler}
-					>
+					<button className="nextButton" onClick={onNextHandler}>
 						NEXT
 					</button>
 				</div>

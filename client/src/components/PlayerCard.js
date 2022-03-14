@@ -95,6 +95,7 @@ const PlayerCard = (props) => {
 				<div className={`winnerMode ${props.data.showWinnerText}`}>WINNER!</div>
 			</div>
 			<br />
+			{props.stealInd == props.id ? <div className="StealText">STEAL</div> : ""}
 			{props.data.rndRemoves && props.data.rndRemoves.length > 0 ? (
 				<div className="pRemoves">
 					<span>
@@ -104,7 +105,6 @@ const PlayerCard = (props) => {
 			) : (
 				<div className="pRemovesDummy"></div>
 			)}
-
 			<div className={`rnd_result ${props.data.rndResult}`}>
 				{props.data.rndResult.toUpperCase()}
 			</div>
