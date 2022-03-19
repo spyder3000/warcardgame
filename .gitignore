@@ -5,3 +5,5 @@ node_modules/
 client/node_modules/
 client/src/archive/
 *.docx
+client/src/components/Game - Copy.js
+client/src/components/Game.js~

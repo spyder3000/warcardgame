@@ -23,7 +23,7 @@ const Game = (props) => {
 	const [turn, setTurn] = useState("");
 	const [nextDisabled, setNextDisabled] = useState(false);
 
-	// Display Toggle state vars...
+	// Display Toggle state vars
 	const [helpToggle, setHelpToggle] = useState("hideMe");
 	const [stealToggle, setStealToggle] = useState("hideMe");
 
