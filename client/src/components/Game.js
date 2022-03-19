@@ -66,7 +66,7 @@ const Game = (props) => {
 	// Initialize Player Data states
 	const [player1Data, setPlayer1Data] = useState({
 		id: 0,
-		name: "Player 1",
+		name: "You",
 		deck: [], // downpile
 		winpile: [], // up-pile
 		currplay: [], // cards played during the current round
@@ -263,7 +263,10 @@ const Game = (props) => {
 		console.log(
 			"Steal Pile Message -- " + pwin.name + " steals from " + plose.name
 		);
-		let w = pwin.name + " steals from " + plose.name;
+		let w =
+			pwin.name +
+			(pwin.id == 0 ? " steal from " : " steals from ") +
+			plose.name;
 		let w2 = " -- Total cards won = " + plose.winpile.length;
 		setMsgData({
 			...msgData,
@@ -319,6 +322,17 @@ const Game = (props) => {
 			}
 		}
 
+		// Moved from below -- first complete the computer steal from prev round, before removing any cards
+		if (currRound.length > 0) {
+			console.log("Finish Steal -- CURR ROUND " + currRound.length);
+			// Computer Steal from previous round;  Finish steal
+			if (finishSteal.win > -1)
+				doComputerSteal(
+					tmpPlayer[finishSteal.win],
+					tmpPlayer[finishSteal.lose]
+				);
+		}
+
 		// Rule 4 process -- remove 1 card from each player for each 4 played in prev round
 		if (lastRound.totFours > 0) {
 			for (let j = 0; j < numPlayers; j++) {
@@ -350,12 +364,13 @@ const Game = (props) => {
 		if (currRound.length > 0) {
 			console.log("CURR RUOUND " + currRound.length);
 
-			// Computer Steal from previous round;  Finish steal
-			if (finishSteal.win > -1)
-				doComputerSteal(
-					tmpPlayer[finishSteal.win],
-					tmpPlayer[finishSteal.lose]
-				);
+			// MOVED EARLIER -- delete this after testing
+			// // Computer Steal from previous round;  Finish steal
+			// if (finishSteal.win > -1)
+			// 	doComputerSteal(
+			// 		tmpPlayer[finishSteal.win],
+			// 		tmpPlayer[finishSteal.lose]
+			// 	);
 
 			console.log("drawTurn = " + drawTurn);
 			if (drawTurn > -1) {
@@ -552,9 +567,11 @@ const Game = (props) => {
 		else if (roundResults.outcome == "tie") tmpMessage.msgMisc = "TIE-BREAKER";
 		else if (roundResults.outcome == "win") {
 			tmpMessage.msgRoundWin =
-				"Player " +
-				(tmpResults.id + 1) +
-				" wins " +
+				tmpPlayer[tmpResults.id].name +
+				(tmpResults.id == 0 ? " win " : " wins ") +
+				// "Player " +
+				// (tmpResults.id + 1) +
+				// " wins " +
 				tmpResults.allCards.length +
 				" cards: ";
 			tmpWonCards.push(...tmpResults.allCards);
@@ -567,7 +584,9 @@ const Game = (props) => {
 		);
 		if (activePlayers.length == 1 && hasCards.length <= 1) {
 			tmpPlayer[activePlayers[0].id].status = "win";
-			tmpMessage.msgWinner = "Player " + (activePlayers[0].id + 1) + " Wins!!!";
+			tmpMessage.msgWinner =
+				tmpPlayer[activePlayers[0].id].name +
+				(tmpPlayer[activePlayers[0].id] == 0 ? " Win!!!!" : " Wins!!!");
 		} else if (activePlayers.length == 0) {
 			tmpMessage.msgWinner = "Game Over -- No winner";
 		}

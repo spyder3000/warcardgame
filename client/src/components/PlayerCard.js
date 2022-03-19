@@ -6,8 +6,8 @@ const PlayerCard = (props) => {
 	console.log(props);
 
 	return (
-		<div className={`playerCard playerCard${props.id}`}>
-			<h2 className="playName">{props.name}</h2>
+		<div className={`playerCard playerCard${props.data.id}`}>
+			<h2 className="playName">{props.data.name}</h2>
 			<div className="cardPiles">
 				<div className="cardPileDown">
 					<img
