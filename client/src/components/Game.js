@@ -23,7 +23,7 @@ const Game = (props) => {
 	const [turn, setTurn] = useState("");
 	const [nextDisabled, setNextDisabled] = useState(false);
 
-	// Display Toggle state vars
+	// Display Toggle state vars...
 	const [helpToggle, setHelpToggle] = useState("hideMe");
 	const [stealToggle, setStealToggle] = useState("hideMe");
 
@@ -313,7 +313,8 @@ const Game = (props) => {
 
 		// Initial check that all players have cards to continue
 		for (let i = 0; i < numPlayers; i++) {
-			if (tmpPlayer[i].status == "active") {
+			// only check cards if not a continuation of a previous round
+			if (tmpPlayer[i].status == "active" && currRound.length == 0) {
 				Misc.checkNumCards(tmpPlayer[i], lastRound.result); // 2nd param unneeded?
 			}
 		}
@@ -359,6 +360,15 @@ const Game = (props) => {
 			console.log("drawTurn = " + drawTurn);
 			if (drawTurn > -1) {
 				let card = Misc.getTopCard(tmpPlayer[drawTurn].currplay);
+				console.log("get Top Card after finish steal = " + card);
+
+				// failsafe for if player steals with their last card;  will shuffle won cards & continue (I think)
+				if (card == undefined) {
+					window.alert("possible bug -- FIX ME");
+
+					card = tmpPlayer[drawTurn].getCard();
+					console.log("get Top Card (TRY 2) after finish steal = " + card);
+				}
 				tempCurrRound.replaceTopCard(drawTurn, card);
 			}
 		} else {
@@ -409,7 +419,14 @@ const Game = (props) => {
 
 		// Check if Steal possibility for Player 1
 		const tmpSteals = [];
-		if (tmpPlayer[0].currRound == "yes" && stealTurn <= 0) {
+		console.log(
+			"card0 = " +
+				tmpPlayer[0].currplay[0] +
+				"; steal = " +
+				tempCurrRound.hasPlayer(0)
+		);
+		if (tempCurrRound.hasPlayer(0) > 0 && stealTurn <= 0) {
+			// if (tmpPlayer[0].currRound == "yes" && stealTurn <= 0) {
 			tmpSteals.push(...Misc.checkSteals(0, tmpPlayer)); // returns an array of player indexes where pile can be stolen
 			if (tmpSteals.length > 0) {
 				console.log("WAIT for Steal response - Player 0");
@@ -439,9 +456,14 @@ const Game = (props) => {
 
 		// Check if Steal possibility for Players 2 thru 4
 		for (let i = 1; i < tmpPlayer.length; i++) {
-			if (tmpPlayer[i].currRound == "yes") {
-				let victim = Misc.checkSteals(i, tmpPlayer);
-				if (victim.length !== 1) continue;
+			// if (tmpPlayer[i].currRound == "yes") {
+			// if (tempCurrRound.data.some((val) => val.id == tmpPlayer[i].id).length > 0 &&
+			if (
+				tempCurrRound.hasPlayer(tmpPlayer[i].id) > 0 &&
+				tmpPlayer[i].id >= stealTurn
+			) {
+				let victim = Misc.checkSteals(i, tmpPlayer, "computer");
+				if (victim.length == 0) continue;
 				console.log("COMPUTER Steal");
 				// Check if advantageous to steal pile OR (if winning card) to win round
 				// ADD logic
@@ -649,12 +671,12 @@ const Game = (props) => {
 			<header className="header">
 				<h1 className="h1_title">WAR CardGame</h1>
 				<div className="nav_buttons">
-					<button className="btn_options" onClick={onEditHandler}>
+					{/* <button className="btn_options" onClick={onEditHandler}>
 						{" "}
 						<ion-icon class="feature-icon" name="book-outline">
 							{" "}
 						</ion-icon>
-					</button>
+					</button> */}
 					<button className="btn_help" onClick={onHelpHandler}>
 						{" "}
 						<ion-icon class="feature-icon" name="help-outline">

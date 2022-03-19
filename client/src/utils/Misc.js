@@ -254,7 +254,7 @@ export default class Misc {
 	}
 
 	// returns an array of player indexes where pile can be stolen
-	static checkSteals(pnum, tmpPlayer) {
+	static checkSteals(pnum, tmpPlayer, computer) {
 		let tmpSteals = [];
 		if (tmpPlayer[pnum].currplay.length == 0) return []; // safety check -- can't steal if you don't have an up card
 
@@ -266,8 +266,18 @@ export default class Misc {
 			if (i == pnum) continue; // can't steal from yourself
 			if (tmpPlayer[i].winpile.length == 0) continue; // can't steal from an empty pile
 
-			// if current card matches top pile on other player's win pile
+			// do not steal if another player's upcard matches your upcard & they would just steal what you just took
+			if (
+				computer !== undefined &&
+				tmpPlayer[i].currplay.length > 0 &&
+				parseInt(
+					Misc.getNum(Misc.getTopCard(tmpPlayer[i].currplay)) == curr_crd
+				)
+			)
+				return [];
+
 			if (Misc.getNum(Misc.getTopCard(tmpPlayer[i].winpile)) == curr_crd) {
+				// if current card matches top pile on other player's win pile
 				tmpSteals.push(i);
 				console.log("Steal Pile -- from player " + i);
 			}

@@ -4,7 +4,7 @@ const StealCheck = (props) => {
 	console.log("StealCheck");
 	console.log(props);
 	return (
-		<div id="pophelp" className={`stealdiv ${props.stealToggle}`}>
+		<div id="popinfo" className={`stealdiv ${props.stealToggle}`}>
 			<h1>Steal Pile?</h1>
 			{props.data.map((dat) => {
 				return (

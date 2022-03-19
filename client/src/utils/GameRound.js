@@ -30,4 +30,7 @@ export default class GameRounc {
 			color: Misc.getColor(card),
 		};
 	};
+	hasPlayer = (id) => {
+		return this.data.some((val) => val.id == id);
+	};
 }
