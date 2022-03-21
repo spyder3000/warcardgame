@@ -14,6 +14,8 @@ export default class Player {
 		this.showTie = dat.showTie; // Show Tie section;  empty unless player is in tiebreaker situation
 		this.hideRound = dat.hideRound; // Hide Round data (for players not in tiebreaker, or if eliminated from game)
 		this.activity = dat.activity ? dat.activity : "";
+		this.stealer = "";
+		this.stolen = "";
 	}
 
 	// Remove cards from players deck = to number of 4s from previous round;

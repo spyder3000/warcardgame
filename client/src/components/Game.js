@@ -281,6 +281,7 @@ const Game = (props) => {
 
 	// called for computer steal when finishSteal values are populated;  p0 is win player; p1 is lose player
 	const doComputerSteal = (p0, p1) => {
+		console.log("doComputerSteal");
 		let i = p0.id; // winner id
 		let j = p1.id; // loser id
 		stealPile(p0, p1);
@@ -289,10 +290,12 @@ const Game = (props) => {
 			winpile: p0.winpile,
 			deck: p0.deck,
 			activity: p0.activity,
+			stealer: "",
 		});
 		modPlayer(j, {
 			winpile: p1.winpile,
 			activity: p1.activity,
+			stolen: "",
 		});
 	};
 
@@ -490,6 +493,8 @@ const Game = (props) => {
 				setDrawTurn(i);
 				setStealInd(i);
 				// modPlayer(i, { rndResult: "Steal" });
+				tmpPlayer[i].stealer = "stealer";
+				tmpPlayer[val].stolen = "stolen";
 				for (let j = 0; j < tmpPlayer.length; j++) {
 					modPlayer(j, { ...tmpPlayer[j], rndRemoves: [], rndResult: "" });
 				}
@@ -568,7 +573,7 @@ const Game = (props) => {
 		else if (roundResults.outcome == "win") {
 			tmpMessage.msgRoundWin =
 				tmpPlayer[tmpResults.id].name +
-				(tmpResults.id == 0 ? " win " : " wins ") +
+				(tmpPlayer[tmpResults.id].id == 0 ? " win " : " wins ") +
 				// "Player " +
 				// (tmpResults.id + 1) +
 				// " wins " +
@@ -586,7 +591,7 @@ const Game = (props) => {
 			tmpPlayer[activePlayers[0].id].status = "win";
 			tmpMessage.msgWinner =
 				tmpPlayer[activePlayers[0].id].name +
-				(tmpPlayer[activePlayers[0].id] == 0 ? " Win!!!!" : " Wins!!!");
+				(tmpPlayer[activePlayers[0].id].id == 0 ? " Win!!!!" : " Wins!!!");
 		} else if (activePlayers.length == 0) {
 			tmpMessage.msgWinner = "Game Over -- No winner";
 		}
@@ -646,6 +651,8 @@ const Game = (props) => {
 							: "",
 					showWinnerText: tmpPlayer[i].status == "win" ? "showWinnerText" : "",
 					activity: "",
+					stealer: "",
+					stolen: "",
 				});
 			} else {
 				modPlayer(i, {
@@ -656,6 +663,8 @@ const Game = (props) => {
 					currplay: [],
 					showLoserText: tmpPlayer[i].status == "loss" ? "showLoserText" : "",
 					activity: "",
+					stealer: "",
+					stolen: "",
 				});
 			}
 		}

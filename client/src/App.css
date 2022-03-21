@@ -188,6 +188,10 @@ button.btn_help {
 	border: 1px solid #666;
 	border-radius: 5px;
 }
+.cardImg0b.stolen {
+	border: 3px solid yellow;
+}
+
 .cardImgBlank {
 	width: 65%;
 	max-width: 100%;
@@ -211,6 +215,9 @@ button.btn_help {
 	max-width: 85%;
 	border: 1px solid #666;
 	border-radius: 8px;
+}
+.cardImg1.stealer {
+	border: 5px solid yellow;
 }
 
 /* cardPlay2 is the TieBreak section -- hidden by default */
@@ -253,6 +260,9 @@ div.cardPlay2 {
 	margin-top: 1rem;
 	border: 2px solid #666;
 	border-radius: 8px;
+}
+.cardImg2b.stealer {
+	border: 5px solid yellow;
 }
 
 /* ELIMINATED PLAYERS */

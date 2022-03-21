@@ -19,7 +19,7 @@ const PlayerCard = (props) => {
 				<div className="cardPileUp">
 					{props.data.winpile.length > 0 ? (
 						<img
-							className="cardImg0b"
+							className={`cardImg0b ${props.data.stolen}`}
 							src={
 								require(`../assets/cards-img/${props.data.winpile[
 									props.data.winpile.length - 1
@@ -39,7 +39,7 @@ const PlayerCard = (props) => {
 				<div className={`cardPlay1 ${props.data.hideRound}`}>
 					{props.data.currplay && props.data.currplay.length > 0 && (
 						<img
-							className="cardImg1"
+							className={`cardImg1 ${props.data.stealer}`}
 							src={
 								require(`../assets/cards-img/${props.data.currplay[
 									props.data.currplay.length - 1
@@ -79,7 +79,7 @@ const PlayerCard = (props) => {
 							</div>
 							<div className="newImage_div">
 								<img
-									className="cardImg2b"
+									className={`cardImg2b ${props.data.stealer}`}
 									src={
 										require(`../assets/cards-img/${props.data.currplay[
 											props.data.currplay.length - 1

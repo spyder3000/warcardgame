@@ -25,7 +25,7 @@ const HelpPage = (props) => {
 				className="closeHelpBtn"
 				onClick={props.closeHelp}
 			>
-				Close dialog
+				Close
 			</button>
 		</div>
 	);

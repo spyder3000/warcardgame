@@ -266,15 +266,37 @@ export default class Misc {
 			if (i == pnum) continue; // can't steal from yourself
 			if (tmpPlayer[i].winpile.length == 0) continue; // can't steal from an empty pile
 
-			// do not steal if another player's upcard matches your upcard & they would just steal what you just took
-			if (
-				computer !== undefined &&
-				tmpPlayer[i].currplay.length > 0 &&
-				parseInt(
-					Misc.getNum(Misc.getTopCard(tmpPlayer[i].currplay)) == curr_crd
-				)
-			)
-				return [];
+			// Computer Logic -- do not steal if another player's upcard matches your upcard & they would just steal what you just took
+			if (computer !== undefined) {
+				for (let j = 0; j < tmpPlayer.length; j++) {
+					if (j == pnum) continue;
+					// the currplay array will be the same for all players on current round
+					if (tmpPlayer[j].currplay.length < tmpPlayer[pnum].currplay.length)
+						continue;
+					let tmpUpCard = parseInt(
+						Misc.getNum(Misc.getTopCard(tmpPlayer[j].currplay))
+					); // upcard of other play
+					console.log(
+						"curr_crd = " +
+							curr_crd +
+							"; vs " +
+							tmpUpCard +
+							"; comp = " +
+							computer +
+							"; currlength = " +
+							tmpPlayer[i].currplay.length
+					);
+					if (tmpUpCard == curr_crd) {
+						console.log(
+							"REJECTED due to resteal possibility - " +
+								curr_crd +
+								"; " +
+								tmpUpCard
+						);
+						return [];
+					}
+				}
+			}
 
 			if (Misc.getNum(Misc.getTopCard(tmpPlayer[i].winpile)) == curr_crd) {
 				// if current card matches top pile on other player's win pile
