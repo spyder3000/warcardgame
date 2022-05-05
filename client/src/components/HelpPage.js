@@ -19,6 +19,10 @@ const HelpPage = (props) => {
 					If a player does not have enough cards to continue, they are removed
 					from the game
 				</li>
+				<li>
+					You (Player 1) have the first option to Steal, followed by Player 2,
+					then Player 3, then Player 4
+				</li>
 			</ul>
 			<button
 				id="closeHelpBtn"

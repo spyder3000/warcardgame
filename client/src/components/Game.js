@@ -19,6 +19,7 @@ const Game = (props) => {
 	const [numPlayers, setNumPlayers] = useState(4);
 	const [gameOver, setGameOver] = useState("false");
 	const [roundNumber, setRoundNumber] = useState(1);
+	const [youWin, setYouWin] = useState("abc");
 	const [winner, setWinner] = useState("");
 	const [turn, setTurn] = useState("");
 	const [nextDisabled, setNextDisabled] = useState(false);
@@ -592,6 +593,10 @@ const Game = (props) => {
 			tmpMessage.msgWinner =
 				tmpPlayer[activePlayers[0].id].name +
 				(tmpPlayer[activePlayers[0].id].id == 0 ? " Win!!!!" : " Wins!!!");
+			if (tmpPlayer[activePlayers[0].id].id == 0) {
+				setYouWin("youwin");
+				setTimeout(() => setYouWin(""), 5000);
+			}
 		} else if (activePlayers.length == 0) {
 			tmpMessage.msgWinner = "Game Over -- No winner";
 		}
@@ -736,6 +741,12 @@ const Game = (props) => {
 						<button id="but2">Close dialog</button>
 					</div>
 				</div> */}
+			</div>
+			<div className={`youwin_banner ${youWin}`}>
+				<div className="youwin_text">
+					<span>YOU WIN!!! </span>
+					<span>😎</span>
+				</div>
 			</div>
 			<div className="messageSection">
 				<Messages data={msgData} />
